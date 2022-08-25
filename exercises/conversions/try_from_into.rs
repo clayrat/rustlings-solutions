@@ -23,8 +23,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need to create an implementation for a tuple of three integers,
@@ -38,6 +36,15 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (r, g, b) = tuple;
+        match (u8::try_from(r), u8::try_from(g), u8::try_from(b)) {
+            (Ok(r8), Ok(g8), Ok(b8)) => Ok(Color {
+                red: r8,
+                green: g8,
+                blue: b8,
+            }),
+            _ => Err(IntoColorError::IntConversion),
+        }
     }
 }
 
@@ -45,6 +52,18 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        match (
+            u8::try_from(arr[0]),
+            u8::try_from(arr[1]),
+            u8::try_from(arr[2]),
+        ) {
+            (Ok(r8), Ok(g8), Ok(b8)) => Ok(Color {
+                red: r8,
+                green: g8,
+                blue: b8,
+            }),
+            _ => Err(IntoColorError::IntConversion),
+        }
     }
 }
 
@@ -52,6 +71,23 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        let s: Vec<i16> = slice.iter().map(|p| *p).collect();
+        if s.len() != 3 {
+            Err(IntoColorError::BadLen)
+        } else {
+            match (
+                u8::try_from(s[0]),
+                u8::try_from(s[1]),
+                u8::try_from(s[2]),
+            ) {
+                (Ok(r8), Ok(g8), Ok(b8)) => Ok(Color {
+                    red: r8,
+                    green: g8,
+                    blue: b8,
+                }),
+                _ => Err(IntoColorError::IntConversion),
+            }
+        }
     }
 }
 
